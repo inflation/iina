@@ -1,0 +1,26 @@
+language: objective-c
+os: osx
+osx_image: xcode9.2
+xcode_workspace: iina.xcworkspace
+xcode_scheme: iina
+before_install:
+- pod repo update
+install:
+- brew install yarn
+- yarn add create-dmg
+- gem install xcpretty
+- pod install
+script:
+- xcodebuild -workspace iina.xcworkspace -scheme iina -configuration Release -archivePath
+  iina.xcarchive archive | xcpretty
+- sed -i '' 's/(1)/(0)/g' node_modules/create-dmg/cli.js
+- node node_modules/create-dmg/cli.js iina.xcarchive/Products/Applications/IINA.app
+deploy:
+  provider: releases
+  api_key:
+    secure: Pf1zXdweJ5tp5MjAj1mFx6OxdqI7CZERBc8o3clqDJJDx0jUtYeKZTSO/n+guo2k+9Xqhi9eKAIDy8ENrTvIj3Xu2JPg1Hw6gQJ/F7n7+s/XD3d1CcO7ew6bK6Lzye5GLIMebsAGd7cX3aYj3iUmmkqkIDjRQko2zHl23RbRgwGzMX/RSaXv35S/3ZxqMH8dx8i2ePtTaZzyhPr65vQJjqk03ne9mKPHsfpflzT2j9U6iQwrpFEWHeqdV1fb3CmFariFCHCwtzvmNM/dkCwkOpNMRTEGt7GE7lX4VLIEbQNPytAsjvLnP/Y10kh8pbnOjAnSKQAk0SjQ7DyCrMz5JdMDvZwail4P0ENnSh8QVr5qqE4DSgeUXYw0fpKNOxbdV0sgN7j6qIFi/WmVfopydx7badaJvFyuFXKBLbGorSLDxXA9QMVb/np7iazHU4h0JTKScyWgvEUcwE9zyjRGrJ6RkWHA79Uf5hE9xuwdqqDDTLpE0Z8iAwk6LnLdnLuLWEJvz3E7wFC8MukqvCKj2bO7sVEpUKJAS0zZTe76S97ZhvBcDh/xB2LG0KRNsoZxZib5ET+kQ11CLSPcZH3Q4WVGnAT1jPn+4RfQss43qzOb9mJO62Xg9n4m3KIQL0tVPSqsxfyXMm4SxWYuhv2avbEMpMlNG4xoGgLUwbveEJg=
+  file_glob: true
+  file: "*.dmg"
+  repo: inflation/iina
+  on:
+    branch: develop
