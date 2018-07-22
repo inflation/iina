@@ -1,19 +1,17 @@
 language: objective-c
 os: osx
-osx_image: xcode9.2
-xcode_workspace: iina.xcworkspace
-xcode_scheme: iina
+osx_image: xcode9.4
 before_install:
 - pod repo update
+- brew install node
 install:
-- brew install yarn
-- yarn add create-dmg
+- npm i create-dmg
 - gem install xcpretty
 - pod install
 script:
-- xcodebuild -workspace iina.xcworkspace -scheme iina -configuration Release -archivePath
+- xcodebuild -workspace iina.xcworkspace -scheme iina-cli -configuration Release -archivePath
   iina.xcarchive archive | xcpretty
-- sed -i '' 's/(1)/(0)/g' node_modules/create-dmg/cli.js
+- sed -i '' 's/(1)/(0)/g' node_modules/create-dmg/cli.js # Let codesign pass
 - node node_modules/create-dmg/cli.js iina.xcarchive/Products/Applications/IINA.app
 deploy:
   provider: releases
